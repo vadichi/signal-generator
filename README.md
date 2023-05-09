@@ -13,3 +13,34 @@ The signal generator can generate square, triangular, saw-tooth, and sine waves 
 | R1        | 270 Ω  |
 | C1        | 0.1 µF |
 | RV1       | 10 kΩ  |
+
+## Dependencies
+
+* `make`;
+
+* `cmake`;
+
+* `gcc`, `g++`;
+
+* `arm-none-eabi-gcc-cs` or equivalent for ARM cross-compilation;
+
+* `arm-none-eabi-newlib` or equivalent;
+
+* Raspberry Pi Pico C/C++ SDK;
+
+## Building
+
+Edit `Source/CMakeLists.txt` to include the `pico_sdk_init.cmake` from your Pico C/C++ SDK folder
+
+```cmake
+include(~/Path/pico-sdk/pico_sdk_init.cmake)
+```
+
+Run the `Source/build.sh` script to build the firmware (and `chmod +x ./Source/build.sh` the first time). You can run a clean build by deleting the `./Source/build` directory first.
+
+```bash
+cd ./Source
+./build.sh
+```
+
+The firmware binary will be in `./Source/build/SignalGenerator.uf2`. 
