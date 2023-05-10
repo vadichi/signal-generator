@@ -18,16 +18,18 @@
 
 #include "pico/stdlib.h"
 
-extern const uint16_t OUTPUT_PIN;
-extern const uint16_t ON_OFF_SWITCH_PIN;
-extern const uint16_t SQUARE_WAVE_BUTTON_PIN;
-extern const uint16_t TRIANGLE_WAVE_BUTTON_PIN;
-extern const uint16_t SAWTOOTH_WAVE_BUTTON_PIN;
-extern const uint16_t SINE_WAVE_BUTTON_PIN;
-extern const uint16_t POTENTIOMETER_FREQUENCY_INPUT_PIN;
-extern const uint16_t POTENTIOMETER_FREQUENCY_INPUT_ADC;
+typedef enum {
+    OUTPUT_PIN = 16,
+    ON_OFF_SWITCH_PIN = 4,
+    SQUARE_WAVE_BUTTON_PIN = 12,
+    TRIANGLE_WAVE_BUTTON_PIN = 13,
+    SAWTOOTH_WAVE_BUTTON_PIN = 14,
+    SINE_WAVE_BUTTON_PIN = 15,
+    POTENTIOMETER_FREQUENCY_INPUT_PIN = 27,
+    POTENTIOMETER_FREQUENCY_INPUT_ADC = 1,
 
-extern const uint16_t SAMPLES_PER_PERIOD;
-extern const uint16_t PWM_OUTPUT_RESOLUTION;
+    SAMPLES_PER_PERIOD = 255,
+    PWM_OUTPUT_RESOLUTION = 65535,
+} Config;
 
 #endif //SIGNALGENERATOR_CONFIG_H
