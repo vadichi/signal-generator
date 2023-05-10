@@ -17,7 +17,7 @@ include_directories(
 
 add_executable(SignalGenerator
         src/main.c
-        src/config.h
+        src/config.h src/config.c
         src/inputs.h src/inputs.c
         src/waves.h src/waves.c
 )

@@ -18,6 +18,8 @@ typedef enum {
     WAVE_TYPES_COUNT,
 } WaveType;
 
+extern Wave waves[(uint8_t) WAVE_TYPES_COUNT];
+
 static void generate_square_waveform(Wave *wave);
 static void generate_triangle_waveform(Wave *wave);
 static void generate_sawtooth_waveform(Wave *wave);

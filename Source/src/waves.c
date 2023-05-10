@@ -1,5 +1,12 @@
 #include "waves.h"
 
+Wave waves[(uint8_t) WAVE_TYPES_COUNT] = {
+        { .samples = {0} },
+        { .samples = {0} },
+        { .samples = {0} },
+        { .samples = {0} },
+};
+
 static void generate_square_waveform(Wave *wave) {
     for (uint16_t sample = 0; sample < SAMPLES_PER_PERIOD; sample++) {
         wave->samples[sample] = (sample < SAMPLES_PER_PERIOD / 2) ? PWM_OUTPUT_RESOLUTION : 0;
