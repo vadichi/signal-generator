@@ -15,6 +15,8 @@
 
 #include "waves.h"
 
+#include <math.h>
+
 Wave waves[(uint8_t) WAVE_TYPES_COUNT] = {
         { .samples = {0} },
         { .samples = {0} },
@@ -29,26 +31,46 @@ static void generate_square_waveform(Wave *wave) {
 }
 
 static void generate_triangle_waveform(Wave *wave) {
-    // ToDo: Implement
+    uint samples_per_half_period = SAMPLES_PER_PERIOD / 2;
 
     for (uint sample = 0; sample < SAMPLES_PER_PERIOD; sample++) {
-        wave->samples[sample] = 0;
+        double height_fraction;
+        if (sample < samples_per_half_period) {
+            // Rising edge
+            height_fraction = ((double)(sample) / (double)(samples_per_half_period));
+
+        } else {
+            // Falling edge
+            height_fraction = ((double)(SAMPLES_PER_PERIOD - sample) / (double)(samples_per_half_period));
+        }
+
+        uint16_t pwm_level = (uint16_t)(height_fraction * PWM_OUTPUT_RESOLUTION);
+        wave->samples[sample] = pwm_level;
     }
 }
 
 static void generate_sawtooth_waveform(Wave *wave) {
-    // ToDo: Implement
-
     for (uint sample = 0; sample < SAMPLES_PER_PERIOD; sample++) {
-        wave->samples[sample] = 0;
+        double height_fraction = ((double)(sample) / (double)(SAMPLES_PER_PERIOD));
+        uint16_t pwm_level = (uint16_t)(height_fraction * PWM_OUTPUT_RESOLUTION);
+
+        wave->samples[sample] = pwm_level;
     }
 }
 
 static void generate_sine_waveform(Wave *wave) {
-    // ToDo: Implement
-
     for (uint sample = 0; sample < SAMPLES_PER_PERIOD; sample++) {
-        wave->samples[sample] = 0;
+        double angle_fraction = ((double)(sample) / (double)(SAMPLES_PER_PERIOD));
+        double angle_radians = angle_fraction * 2.0f * M_PI;
+        double sine = sin(angle_radians);
+
+        uint16_t scale_factor = (uint16_t)(ceil((double)(PWM_OUTPUT_RESOLUTION) / 2.0f));
+        int32_t zero_centered_pwm_level = (int32_t)(sine * scale_factor);
+
+        int32_t normalised_pwm_level = zero_centered_pwm_level + (int32_t)(scale_factor);
+        if (normalised_pwm_level > PWM_OUTPUT_RESOLUTION) normalised_pwm_level = PWM_OUTPUT_RESOLUTION;
+
+        wave->samples[sample] = (uint16_t)(normalised_pwm_level);
     }
 }
 
