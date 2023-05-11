@@ -17,6 +17,8 @@
 
 #include <math.h>
 
+#include "logging.h"
+
 Wave waves[(uint8_t) WAVE_TYPES_COUNT] = {
         { .samples = {0} },
         { .samples = {0} },
@@ -27,6 +29,7 @@ Wave waves[(uint8_t) WAVE_TYPES_COUNT] = {
 static void generate_square_waveform(Wave *wave) {
     for (uint sample = 0; sample < SAMPLES_PER_PERIOD; sample++) {
         wave->samples[sample] = (sample < SAMPLES_PER_PERIOD / 2) ? PWM_OUTPUT_RESOLUTION : 0;
+        log_print("square_waveform[%d] = %d", sample, wave->samples[sample]);
     }
 }
 
@@ -45,7 +48,9 @@ static void generate_triangle_waveform(Wave *wave) {
         }
 
         uint16_t pwm_level = (uint16_t)(height_fraction * PWM_OUTPUT_RESOLUTION);
+
         wave->samples[sample] = pwm_level;
+        log_print("triangle_waveform[%d] = %d", sample, wave->samples[sample]);
     }
 }
 
@@ -55,6 +60,7 @@ static void generate_sawtooth_waveform(Wave *wave) {
         uint16_t pwm_level = (uint16_t)(height_fraction * PWM_OUTPUT_RESOLUTION);
 
         wave->samples[sample] = pwm_level;
+        log_print("sawtooth_waveform[%d] = %d", sample, wave->samples[sample]);
     }
 }
 
@@ -71,12 +77,20 @@ static void generate_sine_waveform(Wave *wave) {
         if (normalised_pwm_level > PWM_OUTPUT_RESOLUTION) normalised_pwm_level = PWM_OUTPUT_RESOLUTION;
 
         wave->samples[sample] = (uint16_t)(normalised_pwm_level);
+        log_print("sine_waveform[%d] = %d", sample, wave->samples[sample]);
     }
 }
 
 void waves_initialise(void) {
+    log_print("Generating square waveform...");
     generate_square_waveform(&waves[WAVE_TYPE_SQUARE]);
+
+    log_print("Generating triangle waveform...");
     generate_triangle_waveform(&waves[WAVE_TYPE_TRIANGLE]);
+
+    log_print("Generating sawtooth waveform...");
     generate_sawtooth_waveform(&waves[WAVE_TYPE_SAWTOOTH]);
+
+    log_print("Generating sine waveform...");
     generate_sine_waveform(&waves[WAVE_TYPE_SINE]);
 }

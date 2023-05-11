@@ -20,6 +20,7 @@ add_executable(SignalGenerator
         src/config.h
         src/pin_io.h src/pin_io.c
         src/waves.h src/waves.c
+        src/logging.h src/logging.c
 )
 
 pico_enable_stdio_usb(SignalGenerator 1)

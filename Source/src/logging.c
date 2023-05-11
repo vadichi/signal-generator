@@ -13,23 +13,21 @@
 // You should have received a copy of the GNU General Public License along with
 // Signal-Generator. If not, see <https://www.gnu.org/licenses/>.
 
-#include "pico/stdlib.h"
-
-#include "pin_io.h"
-#include "waves.h"
 #include "logging.h"
 
-int main(void) {
-    log_print("Starting Signal-Generator...");
-    stdio_init_all();
+#include <stdio.h>
+#include <stdarg.h>
 
-    log_print("Calculating waveforms...");
-    waves_initialise();
+#include "config.h"
 
-    log_print("Initialising IO...");
-    pin_io_initialise();
+void log_print(const char *restrict message, ...) {
+    if (!ENABLE_LOGGING) return;
 
-    while (true) {
-        pin_io_tick();
-    }
+    va_list variable_arguments;
+    va_start(variable_arguments, message);
+
+    vprintf(message, variable_arguments);
+    printf("\n");
+
+    va_end(variable_arguments);
 }

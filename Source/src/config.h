@@ -30,6 +30,8 @@ typedef enum {
 
     SAMPLES_PER_PERIOD = 255,
     PWM_OUTPUT_RESOLUTION = 65535,
+
+    ENABLE_LOGGING = true,
 } Config;
 
 #endif //SIGNALGENERATOR_CONFIG_H
