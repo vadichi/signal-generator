@@ -13,34 +13,45 @@
 // You should have received a copy of the GNU General Public License along with
 // Signal-Generator. If not, see <https://www.gnu.org/licenses/>.
 
-#include "inputs.h"
-#include "config.h"
+#include "pin_io.h"
 
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/adc.h"
 
-static void on_off_switch_isr(uint pin, uint32_t event_data) {
+#include "waves.h"
 
+WaveType requested_wave_type = WAVE_TYPE_SQUARE;
+bool requested_output_enabled = false;
+
+static uint sample = 0;
+static uint pwm_output_slice, pwm_output_channel;
+
+static void on_off_switch_isr(__attribute__((unused)) uint pin, __attribute__((unused)) uint32_t event_data) {
+    requested_output_enabled = !requested_output_enabled;
 }
 
-static void square_wave_button_isr(uint pin, uint32_t event_data) {
-
+static void square_wave_button_isr(__attribute__((unused)) uint pin, __attribute__((unused)) uint32_t event_data) {
+    requested_wave_type = WAVE_TYPE_SQUARE;
 }
 
-static void triangle_wave_button_isr(uint pin, uint32_t event_data) {
-
+static void triangle_wave_button_isr(__attribute__((unused)) uint pin, __attribute__((unused)) uint32_t event_data) {
+    requested_wave_type = WAVE_TYPE_TRIANGLE;
 }
 
-static void sawtooth_wave_button_isr(uint pin, uint32_t event_data) {
-
+static void sawtooth_wave_button_isr(__attribute__((unused)) uint pin, __attribute__((unused)) uint32_t event_data) {
+    requested_wave_type = WAVE_TYPE_SAWTOOTH;
 }
 
-static void sine_wave_button_isr(uint pin, uint32_t event_data) {
-
+static void sine_wave_button_isr(__attribute__((unused)) uint pin, __attribute__((unused)) uint32_t event_data) {
+    requested_wave_type = WAVE_TYPE_SINE;
 }
 
-void inputs_initialise(void) {
+static uint16_t get_current_sample(void) {
+    return waves[requested_wave_type].samples[sample];
+}
+
+void pin_io_initialise(void) {
     gpio_init(OUTPUT_PIN);
     gpio_set_dir(OUTPUT_PIN, GPIO_OUT);
     gpio_set_slew_rate(OUTPUT_PIN, GPIO_SLEW_RATE_FAST);
@@ -60,6 +71,7 @@ void inputs_initialise(void) {
     gpio_set_dir(POTENTIOMETER_FREQUENCY_INPUT_PIN, GPIO_IN);
     adc_gpio_init(POTENTIOMETER_FREQUENCY_INPUT_PIN);
     adc_select_input(POTENTIOMETER_FREQUENCY_INPUT_ADC);
+    // ToDo — pool from second core
 
     gpio_init(ON_OFF_SWITCH_PIN);
     gpio_set_dir(ON_OFF_SWITCH_PIN, GPIO_IN);
@@ -85,4 +97,13 @@ void inputs_initialise(void) {
     gpio_set_dir(SINE_WAVE_BUTTON_PIN, GPIO_IN);
     gpio_set_pulls(SINE_WAVE_BUTTON_PIN, true, false);
     gpio_set_irq_enabled_with_callback(SINE_WAVE_BUTTON_PIN, GPIO_IRQ_EDGE_FALL, true, &sine_wave_button_isr);
+}
+
+// ToDo — use DMA
+void pin_io_tick(void) {
+    pwm_set_gpio_level(OUTPUT_PIN, requested_output_enabled ? get_current_sample() : 0);
+    sample = (sample + 1) % SAMPLES_PER_PERIOD;
+
+    // ToDo — replace with value derived from frequency
+    sleep_us(1);
 }

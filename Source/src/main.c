@@ -15,12 +15,16 @@
 
 #include "pico/stdlib.h"
 
-#include "inputs.h"
+#include "pin_io.h"
 #include "waves.h"
 
 int main(void) {
     stdio_init_all();
 
-    inputs_initialise();
     waves_initialise();
+    pin_io_initialise();
+
+    while (true) {
+        pin_io_tick();
+    }
 }
