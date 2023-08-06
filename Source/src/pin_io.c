@@ -18,6 +18,7 @@
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/adc.h"
+#include "hardware/dma.h"
 
 #include "waves.h"
 #include "logging.h"
@@ -71,9 +72,21 @@ void pin_io_initialise(void) {
     pwm_set_clkdiv(pwm_output_slice, 1.0f);
     pwm_set_clkdiv_mode(pwm_output_slice, PWM_DIV_FREE_RUNNING);
     pwm_set_chan_level(pwm_output_slice, pwm_output_channel, 0);
+
+    uint dma_output_channel = dma_claim_unused_channel(true);
+    dma_channel_config dma_output_config = dma_channel_get_default_config(dma_output_channel);
+    channel_config_set_transfer_data_size(&dma_output_config, DMA_SIZE_16);
+    channel_config_set_read_increment(&dma_output_config, true);
+    channel_config_set_write_increment(&dma_output_config, false);
+    dma_channel_configure(dma_output_channel, &dma_output_config, &pwm_hw->slice[pwm_output_slice].cc,
+                          get_current_sample, 1, false);
+
+
     log_print("Initialised output");
 
     // ToDo — pool from second core
+    // * If the output is updated using DMA, the ADC can be polled from the second core
+    // * It is also possible to set up interrupts (DMA still better)
     adc_init();
     gpio_init(POTENTIOMETER_FREQUENCY_INPUT_PIN);
     gpio_set_dir(POTENTIOMETER_FREQUENCY_INPUT_PIN, GPIO_IN);

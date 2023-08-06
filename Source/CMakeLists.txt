@@ -32,4 +32,5 @@ target_link_libraries(SignalGenerator
     pico_stdlib
     hardware_pwm
     hardware_adc
+    hardware_dma
 )

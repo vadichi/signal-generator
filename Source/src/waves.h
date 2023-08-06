@@ -36,6 +36,7 @@ typedef enum {
 extern Wave waves[(uint8_t) WAVE_TYPES_COUNT];
 extern WaveType requested_wave_type;
 extern bool requested_output_enabled;
+extern uint16_t requested_delay;
 
 static void generate_square_waveform(Wave *wave);
 static void generate_triangle_waveform(Wave *wave);
